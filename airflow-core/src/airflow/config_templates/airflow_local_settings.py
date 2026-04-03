@@ -333,11 +333,7 @@ if REMOTE_LOGGING:
         OPENSEARCH_USERNAME: str = conf.get_mandatory_value("opensearch", "USERNAME")
         OPENSEARCH_PASSWORD: str = conf.get_mandatory_value("opensearch", "PASSWORD")
         OPENSEARCH_WRITE_STDOUT: bool = conf.getboolean("opensearch", "WRITE_STDOUT")
-        OPENSEARCH_WRITE_TO_OPENSEARCH: bool = conf.getboolean(
-            "opensearch",
-            "WRITE_TO_OS",
-            fallback=conf.getboolean("opensearch", "WRITE_TO_OS", fallback=False),
-        )
+        OPENSEARCH_WRITE_TO_OS: bool = conf.getboolean("opensearch", "WRITE_TO_OS")
         OPENSEARCH_JSON_FORMAT: bool = conf.getboolean("opensearch", "JSON_FORMAT")
         OPENSEARCH_TARGET_INDEX: str = conf.get_mandatory_value("opensearch", "TARGET_INDEX")
         OPENSEARCH_HOST_FIELD: str = conf.get_mandatory_value("opensearch", "HOST_FIELD")
@@ -353,7 +349,7 @@ if REMOTE_LOGGING:
             password=OPENSEARCH_PASSWORD,
             target_index=OPENSEARCH_TARGET_INDEX,
             write_stdout=OPENSEARCH_WRITE_STDOUT,
-            write_to_opensearch=OPENSEARCH_WRITE_TO_OPENSEARCH,
+            write_to_opensearch=OPENSEARCH_WRITE_TO_OS,
             offset_field=OPENSEARCH_OFFSET_FIELD,
             host_field=OPENSEARCH_HOST_FIELD,
             base_log_folder=BASE_LOG_FOLDER,

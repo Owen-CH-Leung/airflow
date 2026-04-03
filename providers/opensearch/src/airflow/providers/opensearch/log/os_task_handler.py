@@ -21,7 +21,6 @@ import contextlib
 import json
 import logging
 import os
-import shutil
 import sys
 import time
 from collections import defaultdict
@@ -813,17 +812,26 @@ class OpensearchRemoteLogIO(LoggingMixin):  # noqa: D101
             return
 
         log_id = _render_log_id(self.log_id_template, ti, ti.try_number)  # type: ignore[arg-type]
-        if self.write_stdout:
+        if self.write_stdout or self.write_to_opensearch:
             log_lines = self._parse_raw_log(local_loc.read_text(), log_id)
-            for line in log_lines:
-                sys.stdout.write(json.dumps(line) + "\n")
-                sys.stdout.flush()
 
-        if self.write_to_opensearch:
-            log_lines = self._parse_raw_log(local_loc.read_text(), log_id)
-            success = self._write_to_opensearch(log_lines)
-            if success and self.delete_local_copy:
-                shutil.rmtree(os.path.dirname(local_loc))
+            if self.write_stdout:
+                for line in log_lines:
+                    sys.stdout.write(json.dumps(line) + "\n")
+                    sys.stdout.flush()
+
+            if self.write_to_opensearch:
+                success = self._write_to_opensearch(log_lines)
+                if success and self.delete_local_copy:
+                    local_loc.unlink(missing_ok=True)
+                    base_dir = self.base_log_folder
+                    parent = local_loc.parent
+                    while parent != base_dir and parent.is_dir():
+                        if any(parent.iterdir()):
+                            break
+                        with contextlib.suppress(OSError):
+                            parent.rmdir()
+                        parent = parent.parent
 
     def _parse_raw_log(self, log: str, log_id: str) -> list[dict[str, Any]]:
         parsed_logs = []
@@ -831,7 +839,11 @@ class OpensearchRemoteLogIO(LoggingMixin):  # noqa: D101
         for line in log.split("\n"):
             if not line.strip():
                 continue
-            log_dict = json.loads(line)
+            try:
+                log_dict = json.loads(line)
+            except json.JSONDecodeError:
+                self.log.warning("Skipping non-JSON log line: %r", line)
+                log_dict = {"event": line}
             log_dict.update({"log_id": log_id, self.offset_field: offset})
             offset += 1
             parsed_logs.append(log_dict)
@@ -873,7 +885,7 @@ class OpensearchRemoteLogIO(LoggingMixin):  # noqa: D101
             )
             return [], [missing_log_message]
 
-        header = ["".join([host for host in logs_by_host.keys()])]
+        header = list(logs_by_host.keys())
         message = []
         for hits in logs_by_host.values():
             for hit in hits:
