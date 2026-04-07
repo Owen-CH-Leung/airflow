@@ -118,14 +118,14 @@ def get_provider_info():
                     },
                     "write_to_os": {
                         "description": "Write the task logs directly to OpenSearch\n",
-                        "version_added": "1.8.6",
+                        "version_added": "1.9.0",
                         "type": "string",
                         "example": None,
                         "default": "False",
                     },
                     "target_index": {
                         "description": "Name of the index to write to when direct OpenSearch log writing is enabled\n",
-                        "version_added": "1.8.6",
+                        "version_added": "1.9.0",
                         "type": "string",
                         "example": None,
                         "default": "airflow-logs",
