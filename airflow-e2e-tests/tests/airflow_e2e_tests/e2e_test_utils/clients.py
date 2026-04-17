@@ -43,7 +43,6 @@ def get_s3_client():
     )
 
 
-
 def create_request_session_with_retries(status_forcelist: list[int]):
     """Create a requests Session with retry logic for handling transient errors."""
     Retry.DEFAULT_BACKOFF_MAX = 32

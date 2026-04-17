@@ -109,8 +109,8 @@ def _setup_opensearch_integration(dot_env_file, tmp_dir):
         "AIRFLOW__LOGGING__REMOTE_LOGGING=true\n"
         "AIRFLOW__OPENSEARCH__HOST=http://opensearch:9200\n"
         "AIRFLOW__OPENSEARCH__PORT=9200\n"
-        "AIRFLOW__OPENSEARCH__USERNAME=\n"
-        "AIRFLOW__OPENSEARCH__PASSWORD=\n"
+        "AIRFLOW__OPENSEARCH__USERNAME=admin\n"
+        "AIRFLOW__OPENSEARCH__PASSWORD=admin\n"
         "AIRFLOW__OPENSEARCH__WRITE_STDOUT=false\n"
         "AIRFLOW__OPENSEARCH__JSON_FORMAT=true\n"
         "AIRFLOW__OPENSEARCH__WRITE_TO_OS=true\n"
@@ -220,7 +220,7 @@ def _print_logs(compose_instance: DockerCompose):
         if service:
             stdout, _ = compose_instance.get_logs(service)
             console.print(f"::group:: {service} Logs")
-            console.print(stdout, style="red", soft_wrap=True)
+            console.print(stdout, style="red", soft_wrap=True, markup=False)
             console.print("::endgroup::")
 
 
