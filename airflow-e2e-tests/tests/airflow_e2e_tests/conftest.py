@@ -117,7 +117,6 @@ def _setup_opensearch_integration(dot_env_file, tmp_dir):
         "AIRFLOW__OPENSEARCH__TARGET_INDEX=airflow-e2e-logs\n"
         "AIRFLOW__OPENSEARCH__HOST_FIELD=host\n"
         "AIRFLOW__OPENSEARCH__OFFSET_FIELD=offset\n"
-        "_PIP_ADDITIONAL_REQUIREMENTS=apache-airflow-providers-opensearch\n"
     )
     os.environ["ENV_FILE_PATH"] = str(dot_env_file)
 
